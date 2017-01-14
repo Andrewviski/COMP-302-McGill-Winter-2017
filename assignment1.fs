@@ -17,7 +17,7 @@ submit it.  *)
 
 let rec sumlist l =
 	match l with
-	| [] -> 0
+	| [] -> 0.0
 	| x::xs -> x + (sumlist xs)
 
 let rec pairlists twolists =
