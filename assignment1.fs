@@ -16,66 +16,73 @@ submit it.  *)
 (* Question 1 *) (* Do not edit this line. *)
 
 let rec sumlist l =
-	match l with
-	| [] -> 0.0
-	| x::xs -> x + (sumlist xs)
+    match l with
+    | [] -> 0.0
+    | x::xs -> x + (sumlist xs)
 
 let rec pairlists twolists =
-  match twolists with
+    match twolists with
     | ([],[]) -> []
     | ([],x::xs) -> failwith "Error -- lists are not of the same length"
     | (x::xs, []) -> failwith "Error -- lists are not of the same length"
     | (x::xs, y::ys) -> (x,y)::(pairlists(xs,ys))
 
-let w_mean weights data = failwith "TODO"
+let w_mean weights data = 
+    let rec flatten l=
+        match l with
+        | []->[]
+        | (l,r)::xs ->
+            (l*r)::flatten(xs)
+    ((sumlist (flatten (pairlists (weights,data))))/(sumlist weights))
   
 (* Question 2. *)  (* Do not edit this line. *)
 
 let rec memberof pair =
-	match pair with
-	| (e,[]) -> false
-	| (e,x::xs)-> 
-		if e = x then true
-		else memberof (e,xs)
+    match pair with
+    | (e,[]) -> false
+    | (e,x::xs)-> 
+        if e = x then true
+        else memberof (e,xs)
 
 
 let rec remove(item, lst) =
-	match lst with
-	| [] -> []
-	| x::xs -> 
-		if item = x then remove(item,xs)
-		else x::remove(item,xs)
+    match lst with
+    | [] -> []
+    | x::xs -> 
+        if item = x then remove(item,xs)
+        else x::remove(item,xs)
 
 
 (* Question 3. *)  (* Do not edit this line. *)
 
 let findMax l = 
-  let rec helper(l,m) = failwith "Not implemented"
-	match l with
-	| [] -> m
-	| x::xs -> 
-		if m > x then helper(xs,m)
-		else helper(xs,x)
-  match l with
-  | [] -> failwith "Error -- empty list"
-  | (x::xs) -> helper(xs,x)
+    let rec helper(l,m) =
+        match l with
+        | [] -> m
+        | x::xs -> 
+            if m > x then helper(xs,m)
+            else helper(xs,x)
+    match l with
+    | [] -> failwith "Error -- empty list"
+    | (x::xs) -> helper(xs,x)
 
 (* Question 4. *)  (* Do not edit this line. *)
   
-let rec selsort l = failwith "Not implemented"
-  match l with
-  | [] -> []
-  | _ -> let m = (findMax l)
-         m::(selsort(remove(m,l)))
+let rec selsort l =
+    match l with
+    | [] -> []
+    | x::xs -> 
+        let m = (findMax l)
+        m::(selsort(remove(m,l)))
 
 (* Question 5. *)  (* Do not edit this line. *)
 
 let rec common twolists =
-	match twolists with
-	| ([],l) -> []
-	| (x::xs,l) ->
-		if memberof (x,l) then x::common(xs,l)
-		else common(xs,l)
+    match twolists with
+    | ([],l) -> []
+    | (x::xs,l) ->
+        if memberof (x,l) then x::common(xs,l)
+        else common(xs,l)
 
 (* Question 6. *)   (* Do not edit this line. *)
 
@@ -83,27 +90,29 @@ let rec common twolists =
 some other sort defeats the whole purpose.*)
 
 let rec split l =
-	match l with
-	| [x] -> [x]
-	| _ -> 
-		let n=l.Length
-		(arr.[0..(n/2)-1],arr.[(n/2)..n-1])
-	
-
+    match l with
+    | [] -> ([],[])
+    | x::xs -> 
+        let (p1,p2)=split xs
+        if l.Length % 2 = 0 then
+            (x::p1,p2)
+        else
+            (p1,x::p2)
+    
 let rec merge twolists =
-	match twolists with
-	| ([],[]) -> []
-	| ([],y::ys) -> ys
-	| (x::xs,[]) -> xs
-	| (x::xs,y::ys) -> 
-		if x < y then x::merge(xs,y::ys)
-		else y::merge(x::xs,ys)
+    let (l,r) = twolists
+    match l,r with
+    | ([],[]) -> []
+    | ([],_) -> r
+    | (_,[]) -> l
+    | (x::xs,y::ys) ->
+        if x < y then x::merge(xs,r)
+        else y::merge(l,ys)
 
 let rec mergesort l = 
-  match l with
-  | [] -> []
-  | (n::[]) -> n::[] (* Without this you will go into an infinite loop. *)
-  | n::ns -> 
-	  let p=split n::ns
-	  merge(mergesort fst p,mergesort snd p) 
-
+    match l with
+    | [] -> []
+    | (n::[]) -> n::[] (* Without this you will go into an infinite loop. *)
+    | n::ns -> 
+        let (p1,p2)=split l
+        merge(mergesort p1,mergesort p2)
