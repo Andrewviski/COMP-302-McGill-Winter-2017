@@ -28,12 +28,7 @@ let rec pairlists twolists =
     | (x::xs, y::ys) -> (x,y)::(pairlists(xs,ys))
 
 let w_mean weights data = 
-    let rec flatten l=
-        match l with
-        | []->[]
-        | (l,r)::xs ->
-            (l*r)::flatten(xs)
-    ((sumlist (flatten (pairlists (weights,data))))/(sumlist weights))
+    (sumlist (pairlists (weights,data) |> List.map (fun (a,b) -> a*b )))/(sumlist weights)
   
 (* Question 2. *)  (* Do not edit this line. *)
 
@@ -79,6 +74,8 @@ let rec selsort l =
 
 let rec common twolists =
     match twolists with
+    | ([],[])-> []
+    | (l,[]) -> []
     | ([],l) -> []
     | (x::xs,l) ->
         if memberof (x,l) then x::common(xs,l)
