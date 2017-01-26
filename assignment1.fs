@@ -78,7 +78,12 @@ let rec common twolists =
     | (l,[]) -> []
     | ([],l) -> []
     | (x::xs,l) ->
-        if memberof (x,l) then x::common(xs,l)
+        if memberof (x,l) then
+            let r=common(xs,l)
+            if not(memberof(x,r))  then
+                x::r
+            else
+                r
         else common(xs,l)
 
 (* Question 6. *)   (* Do not edit this line. *)
