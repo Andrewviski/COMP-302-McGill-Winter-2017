@@ -91,15 +91,14 @@ let rec common twolists =
 (* Mergesort requires that you use recursion.  Using isort or
 some other sort defeats the whole purpose.*)
 
+
 let rec split l =
+    let swap (a, b) = (b, a)
     match l with
     | [] -> ([],[])
     | x::xs -> 
-        let (p1,p2)=split xs
-        if l.Length % 2 = 0 then
-            (x::p1,p2)
-        else
-            (p1,x::p2)
+        let (p1,p2)= swap(split xs)
+        (x::p1,p2)
     
 let rec merge twolists =
     let (l,r) = twolists
