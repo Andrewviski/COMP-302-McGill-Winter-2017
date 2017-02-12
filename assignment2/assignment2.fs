@@ -14,18 +14,41 @@ have not tested it.  You will get ZERO FOR THE ENTIRE ASSIGMENT even if the
 problem is only with one question.  If you are not able to get the code to
 compile and run do not submit it.  *)
 
-(* Question 1 *) 
+(* Question 1 *)
 
 let deriv (f, dx: float) = fun x -> ((f(x + dx) - f(x))/dx)
 
-let rec newton(f,guess:float,tol:float,dx:float) = failwith "Not implemented"
+let rec newton(f,guess:float,tol:float,dx:float) =
+    if (f guess)<tol then
+        guess
+    else
+        newton(f,(guess - ((f guess)/(deriv(f,dx) guess))),tol,dx)
 
-(* For testing 
+(* For testing
 let make_cubic(a:float,b,c) = fun x -> (x*x*x + a * x*x + b*x + c)
 newton(make_cubic(2.0,-3.0,1.0),0.0,0.0001,0.0001)
 
 let root = newton(sin,5.0,0.0001,0.0001)
 *)
+type Exptree =
+  | Const of int
+  | Var of char
+  | Plus of Exptree * Exptree
+  | Times of Exptree * Exptree
+
+type Env = Map<char, int>
+let rec eval(e : Exptree, rho: Env) =
+  match e with
+  | Const n -> n
+  | Var v -> Map.find v rho
+  | Plus (e1, e2) ->
+      let v1 = eval(e1,rho)
+      let v2 = eval(e2,rho)
+      v1 + v2
+  | Times (e1, e2) ->
+      let v1 = eval(e1,rho)
+      let v2 = eval(e2,rho)
+      v1 * v2
 
 (* Question 2 *)
 
@@ -33,11 +56,24 @@ type term = Term of float * int
 type poly = Poly of (float * int) list
 
 exception EmptyList
+//TODO: fix 0 terms and same expo terms
+let multiplyPolyByTerm(Term (c,e):term, Poly p:poly):poly =
+    match p with
+    | [] -> raise EmptyList
+    | _ -> Poly (List.map (fun (tc,te) -> (tc*c,te+e)) p)
+                    
+//TODO: fix 0 terms and same expo terms
+let addTermToPoly(Term (c,e):term, Poly p:poly):poly =
+    match p with
+    | [] -> raise EmptyList
+    | _ ->
+        let t=List.filter (fun (_,x) -> x=e) p 
+        if t=[] then
+            (c,e)::p
 
-let multiplyPolyByTerm(Term (c,e):term, Poly p:poly):poly = failwith "Not implemented"
+        
+                    
 
-let addTermToPoly(Term (c,e):term, Poly p:poly):poly = failwith "Not implemented"
-                
 let addPolys(Poly p1:poly, Poly p2:poly):poly = failwith "Not implemented"
 
 let multPolys(Poly p1:poly, Poly p2:poly) = failwith "Not implemented"
@@ -58,9 +94,9 @@ let diffPoly (Poly p) = failwith "Not implemented"
 
 (* Question 3 *)
 type Exptree =
-  | Const of int 
-  | Var of string 
-  | Add of Exptree * Exptree 
+  | Const of int
+  | Var of string
+  | Add of Exptree * Exptree
   | Mul of Exptree * Exptree
 
 type Bindings = (string * int) list
@@ -70,12 +106,12 @@ type Bindings = (string * int) list
 let rec lookup(name:string, env: Bindings) = failwith "Not implemented"
 
 let rec insert(name:string, value: int, b: Bindings) = failwith "Not implemented"
-                                           
+
 let rec eval(exp : Exptree, env:Bindings) = failwith "Not implemented"
 
-(* For testing 
+(* For testing
 
-let env:Bindings = [("a",3);("b",4);("c",5)]                                
+let env:Bindings = [("a",3);("b",4);("c",5)]
 
 let exp1 = Add(Const 3, Const 4)
 let exp2 = Add(Const 3, Var "b")
@@ -92,17 +128,17 @@ let env2 = insert("b",10,env)
 type Team = string
 type Goals = Goals of int
 type Points = Points of int
-type Fixture = Team * Team  
+type Fixture = Team * Team
 type Result = ((Team * Goals) * (Team * Goals))
 type Table = Map<Team,Points>
-    
+
 let league =
   ["Chelsea"; "Spurs"; "Liverpool"; "ManCity"; "ManUnited"; "Arsenal"; "Everton"; "Leicester"]
 
 let pointsMade (r: Result) = failwith "Not implemented"
 
 let initEntry (name:Team) = (name, Points 0)
-           
+
 let initializeTable l = Map.ofList (List.map initEntry l)
 
 let weekend1:Result list = [(("Chelsea", Goals 2),("Spurs", Goals 1)); (("Liverpool", Goals 3),("ManCity", Goals 2));(("ManUnited", Goals 1),("Arsenal", Goals 4));(("Everton", Goals 1),("Leicester", Goals 5))]
@@ -131,7 +167,7 @@ let rec isort lst =
   | x::xs -> myinsert x (isort xs)
 
 let showStandings (t:Table) = isort (Map.toList t)
-                                                  
+
 (* Question 5 *)
 
 type Destination = City of string
@@ -153,5 +189,3 @@ let roadData = [
 let makeRoadMap data = failwith "Not implemented"
 
 let rec upToManySteps (Roads r) n startCity = failwith "Not implemented"
-
-
