@@ -24,21 +24,52 @@ let rec displayList (c : RList) =
       match !c with
           | None -> []
               | Some { data = d; next = l } -> d :: (displayList l)
+              
+(* This converts a cell to a list.  You may find it useful for testing.  No need to
+* use it in your solution. *)
+let cellToRList (c:Cell):RList = ref (Some c)
 
-              (* This converts a cell to a list.  You may find it useful for testing.  No need to
-               * use it in your solution. *)
 
-              let cellToRList (c:Cell):RList = ref (Some c)
+(* This is what you need to code. *)
 
-              (* This is what you need to code. *)
-let reverse (lst: RList) = failwith "Not implemented"
-
+let rec reverse (lst: RList) =
+    match !lst with
+    | None-> lst
+    | Some {next=n} ->
+        let rest=reverse n
+        match !rest with
+        | None -> rest
+        | Some {next=nn}->
+            nn:=!lst
+            rest
 
 (* Question 2*)
 
 type transaction = Withdraw of int | Deposit of int | CheckBalance | ChangePassword of string | Close
 
-let makeProtectedAccount(openingBalance: int, password: string) = failwith "Not implemented"
+let makeProtectedAccount(openingBalance: int, password: string) =
+    let balance = ref openingBalance
+    fun (p:string,t: transaction) ->
+        match t with
+        | Withdraw(m) ->
+            if p = password then
+                if (!balance > m)then
+                    balance := !balance - m; printfn "Balance is %i" !balance
+                else
+                    printfn "Insufficient funds."
+            else
+                printfn "Wrong password!"
+        | Deposit(m) -> 
+                if p = password then
+                    (balance := !balance + m; (printfn "Balance is %i" !balance))
+                else
+                    printfn "Wrong password!"
+        | CheckBalance -> 
+               if p = password then
+                    (printfn "Balance is %i" !balance)
+                else
+                    printfn "Wrong password!"
+        
 
 (* Question 3 *)
 
