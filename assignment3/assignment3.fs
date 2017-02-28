@@ -33,21 +33,22 @@ let cellToRList (c:Cell):RList = ref (Some c)
 (* This is what you need to code. *)
 
 let rec reverse (lst: RList) =
-    match !lst with
-    | None-> lst
-    | Some {next=n} ->
+    let Some {data=d;next=n} = !lst
+    if isNull(n) then
+        lst
+    else
         let rest=reverse n
-        match !rest with
-        | None -> rest
-        | Some {next=nn}->
-            nn:=!lst
-            rest
+        let Some {data=d;next=nn} = n
+        nn:=!n
+        n:=null
+        rest   
+
 
 (* Question 2*)
 
 type transaction = Withdraw of int | Deposit of int | CheckBalance | ChangePassword of string | Close
 
-let makeProtectedAccount(openingBalance: int, password: string) =
+let makeProtectedAccount(openingBalance: int, password: string) =*+-9/
     let balance = ref openingBalance
     fun (p:string,t: transaction) ->
         match t with
