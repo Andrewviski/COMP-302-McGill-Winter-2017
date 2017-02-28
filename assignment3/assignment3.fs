@@ -1,14 +1,15 @@
 module Hw3
+
 (* Assignment 3 *) (* Do not edit this line. *)
 (* Student name: Carlos Brathwaite, Id Number: 6666 *) (* Edit this line. *)
 
 (* In the template below we have written the names of the functions that
- * you need to define.  You MUST use these names.  If you introduce auxiliary
- * functions you can name them as you like, except that your names should not
- * clash with any of the names we are using.  We have also shown the types
- * that you should have.  It is OK to change a "rec" declaration and put the
- * recursive function inside a helper if you want to.  Your code MUST compile
- * and must NOT go into infinite loops. *)
+you need to define.  You MUST use these names.  If you introduce auxiliary
+functions you can name them as you like, except that your names should not
+clash with any of the names we are using.  We have also shown the types
+that you should have.  It is OK to change a "rec" declaration and put the
+recursive function inside a helper if you want to.  Your code MUST compile
+and must NOT go into infinite loops. *)
 
 (* Question 1 *)
 type Cell = { data : int; next : RList}
@@ -21,27 +22,23 @@ let c5 = {data = 5; next = ref (Some c3)}
 
 (* This converts an RList to an ordinary list, which is then displayed. *)
 let rec displayList (c : RList) =
-      match !c with
-          | None -> []
-              | Some { data = d; next = l } -> d :: (displayList l)
-              
+  match !c with
+    | None -> []
+    | Some { data = d; next = l } -> d :: (displayList l)
+
 (* This converts a cell to a list.  You may find it useful for testing.  No need to
-* use it in your solution. *)
+use it in your solution. *)
+
 let cellToRList (c:Cell):RList = ref (Some c)
 
-
 (* This is what you need to code. *)
-
-let rec reverse (lst: RList) =
-    let Some {data=d;next=n} = !lst
+let reverse (lst: RList) =
+    let Some c=lst in
+    let {data=d;next=n}=c
     if isNull(n) then
         lst
     else
-        let rest=reverse n
-        let Some {data=d;next=nn} = n
-        nn:=!n
-        n:=null
-        rest   
+        lst
 
 
 (* Question 2*)
@@ -69,8 +66,7 @@ let makeProtectedAccount(openingBalance: int, password: string) =*+-9/
                if p = password then
                     (printfn "Balance is %i" !balance)
                 else
-                    printfn "Wrong password!"
-        
+                    printfn "Wrong password!""
 
 (* Question 3 *)
 
@@ -96,22 +92,8 @@ let n1 = Node(1,[n2;n3;n4])
 
 (* Just for testing, not needed for your solution. *)
 let showNode n =
-      match n with
-          | Node(i,_) -> (printfn "%i" i)
+  match n with
+    | Node(i,_) -> (printfn "%i" i)
 
-              
-          bfIter (fun n -> printfn "%i" n) n1
-
-              
-
-
-
-
-
-
-                  
-
-
-                  
-
-                
+    
+bfIter (fun n -> printfn "%i" n) n1
