@@ -1,7 +1,7 @@
 module Hw3
 
 (* Assignment 3 *) (* Do not edit this line. *)
-(* Student name: Carlos Brathwaite, Id Number: 6666 *) (* Edit this line. *)
+(* Student name: Andree Kaba, Id Number: 260493293 *) (* Edit this line. *)
 
 (* In the template below we have written the names of the functions that
 you need to define.  You MUST use these names.  If you introduce auxiliary
@@ -31,50 +31,63 @@ use it in your solution. *)
 
 let cellToRList (c:Cell):RList = ref (Some c)
 
-(* This is what you need to code. *)
-let reverse (lst: RList) =
-    let Some c=lst in
-    let {data=d;next=n}=c
-    if isNull(n) then
-        lst
-    else
-        lst
+exception BadList;
+
+//(* This is what you need to code. *)
+//let rec reverse (lst: RList) =
+//    let prev=lst
+//    while !lst <> None do
+//        lst:=!lst.next
+
+        
+        
+
+//displayList (reverse (cellToRList c5)) |> ignore
 
 
 (* Question 2*)
 
 type transaction = Withdraw of int | Deposit of int | CheckBalance | ChangePassword of string | Close
 
-let makeProtectedAccount(openingBalance: int, password: string) =*+-9/
+let makeProtectedAccount(openingBalance: int, password: string) =
     let balance = ref openingBalance
+    let op = ref 1
+    let pass=ref password
     fun (p:string,t: transaction) ->
-        match t with
-        | Withdraw(m) ->
-            if p = password then
-                if (!balance > m)then
-                    balance := !balance - m; printfn "Balance is %i" !balance
-                else
-                    printfn "Insufficient funds."
-            else
-                printfn "Wrong password!"
-        | Deposit(m) -> 
-                if p = password then
-                    (balance := !balance + m; (printfn "Balance is %i" !balance))
-                else
-                    printfn "Wrong password!"
-        | CheckBalance -> 
-               if p = password then
-                    (printfn "Balance is %i" !balance)
-                else
-                    printfn "Wrong password!""
-
+        if !op = 0 then
+            printfn "Account closed."
+        else
+            if p <> !pass then
+                printfn "Incorrect password."
+            else  
+                match t with
+                | Withdraw(m) ->
+                    if (!balance >= m)then
+                        balance := !balance - m; printfn "The new balance is %i." !balance
+                    else
+                        printfn "Insufficient funds."
+                | Deposit(m) -> 
+                    balance := !balance + m; (printfn "The new balance is %i." !balance)
+                | CheckBalance -> 
+                    printfn "Balance is %i." !balance
+                | ChangePassword(s) -> 
+                    pass:=s
+                    printfn "Password changed."
+                | Close ->
+                    op:=0;
+                    printfn "Account successfully closed"
 (* Question 3 *)
-
 open System.Collections.Generic;;
-
 type ListTree<'a> = Node of 'a * (ListTree<'a> list)
 
-let bfIter f ltr = failwith "Not implemented"
+let bfIter f ltr =
+    let q=Queue< ListTree<'a> >()
+    q.Enqueue(ltr)
+    while q.Count<> 0 do
+        let (Node (value,neighbours))=q.Dequeue()
+        f value
+        for n in neighbours do
+            q.Enqueue(n)
 
 (* Some examples I used for testing.  *)
 let n5 = Node(5,[])
@@ -89,11 +102,9 @@ let n2 = Node(2,[n5;n6;n7;n8])
 let n3 = Node(3,[n9;n10])
 let n4 = Node(4,[n11])
 let n1 = Node(1,[n2;n3;n4])
-
 (* Just for testing, not needed for your solution. *)
 let showNode n =
   match n with
     | Node(i,_) -> (printfn "%i" i)
 
-    
 bfIter (fun n -> printfn "%i" n) n1
