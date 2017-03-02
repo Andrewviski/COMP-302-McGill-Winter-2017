@@ -31,19 +31,20 @@ use it in your solution. *)
 
 let cellToRList (c:Cell):RList = ref (Some c)
 
-exception BadList;
-
-//(* This is what you need to code. *)
-//let rec reverse (lst: RList) =
-//    let prev=lst
-//    while !lst <> None do
-//        lst:=!lst.next
-
-        
-        
-
-//displayList (reverse (cellToRList c5)) |> ignore
-
+(* This is what you need to code. *)
+let reverse (lst: RList) =
+    let rec helper (l:RList)=
+        match !l with
+        | None -> ref !l
+        | Some {next=n} ->
+            match !n with
+            | None -> ref !l
+            | Some {next=nn} ->
+                let r=helper n
+                nn:= !l
+                n:= None
+                r
+    helper lst
 
 (* Question 2*)
 
