@@ -44,8 +44,8 @@ let reverse (lst: RList) =
                 nn:= !l
                 n:= None
                 r
-    lst:=!(helper lst)
-    lst
+    helper lst
+
 
 (* Question 2*)
 
