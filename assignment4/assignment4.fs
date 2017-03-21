@@ -47,8 +47,8 @@ let rec unify (s : term) (t : term) : substitution =
         | (x::xs, y::ys) -> (x,y) :: (merge (xs,ys))
         
     match (s,t) with
-    //two variables we add them to the substition directly 
-    | (Var v1,Var v2) -> []
+    //two variables we add them to the substition directly if the mismatch
+    | (Var v1,Var v2) -> if v1=v2 then [] else [(v1,Var v2)]
     //variable and a constant easy TODO: f(x,x) f(3,4)
     | (Var v,Const c) | (Const c,Var v)-> [(v,Const c)]
     //const and another const much match
