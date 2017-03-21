@@ -34,40 +34,44 @@ let apply (s : substitution) (t : term) : term =
 
 (* unify one pair *)
 let rec unify (s : term) (t : term) : substitution =
-    match s with
-    | Var v1->
-        match t with
-        | Var v2 -> [(v1,Var v2)]
-        | Const c2 -> [(v1,Const c2)]
-        | Term (f2,args2) -> if not (occurs v1 (Term (f2,args2))) then
-                                [(v1,Term (f2,args2))]
-                             else
-                                failwith "not unifiable: circularity"
-    | Const c1 ->
-        match t with
-        | Var v2 -> [(v2,Const c1)]
-        | Const c2 -> if c1=c2 then [] 
-                      else failwith "not unifiable: clashing constants" 
-        | Term (f2,args2) -> failwith "not unifiable: term constant clash"
-    | Term (f1,args1) ->
-        match t with
-        | Var v2 -> if not (occurs v2 (Term (f1,args1))) then
-                        [(v2,Term (f1,args1))]
-                    else
-                        failwith "not unifiable: circularity"
-        | Const c2 -> failwith "not unifiable: term constant clash"
-        | Term (f2,args2) -> if f2 <> f2 then failwith "not unifiable: head symbol conflict"
-                             else unify_list (List.fold2 (fun acc t1 t2 -> (t1,t2)::acc) [] args1 args2)
+
+    //use the same code that we created in assingment 1 to merge the lists :)
+    let rec merge twolists = 
+        match twolists with
+        | ([],[]) -> []
+        | ([],x::xs) -> failwith "Error -- lists are not of the same length"
+        | (x::xs, []) -> failwith "Error -- lists are not of the same length"
+        | (x::xs, y::ys) -> (x,y) :: (merge (xs,ys))
+        
+    match (s,t) with
+    //two variables we add them to the substition directly 
+    | (Var v1,Var v2) -> if v1= v2 then [] else [(v1,Var v2)]
+    //variable and a constant easy TODO: f(x,x) f(3,4)
+    | (Var v,Const c) | (Const c,Var v)-> [(v,Const c)]
+    //const and another const much match
+    | (Const c1,Const c2) -> if c1=c2 then [] else failwith "not unifiable: clashing constants"
+    | (Term _,Const _) | (Const _,Term _) -> failwith "not unifiable: term constant clash"
+    | (Term (f1,args1),Term (f2,args2)) ->
+        if f1=f2 && List.length args1 = List.length args2 then
+            unify_list (merge (args1,args2))
+        else failwith "not unifiable: head symbol conflict"
+    //make sure that cases such as f(x)=x don't happen
+    | (Var v,Term (f,args)) | (Term (f,args),Var v) ->
+        if occurs v (Term (f,args)) then failwith "not unifiable: circularity"
+        else [(v,Term (f,args))]
+
 
 (* unify a list of pairs *)
 and unify_list (s : (term * term) list) : substitution =
     match s with
     | [] -> []
-    | (t1,t2)::rest -> let temps=(unify t1 t2)
-                       let tempr=(unify_list rest)
-                       if List.tryFind 
-    
+    | (t1,t2)::rest -> 
+        let u_rest=(unify_list rest)
+        let res=unify (apply u_rest t1) (apply u_rest t2)
+        res@u_rest
+                    
                        
+                   
 (*
 Examples
 > let t1 = Term("f",[Var "x";Var "y"; Term("h",[Var "x"])]);;
@@ -108,4 +112,4 @@ val it : term = Term ("f",[Const 2; Const 3; Const 3])
 System.Exception: not unifiable: term constant clash
 ....... junk removed .............
 Stopped due to error
-*)*
+*)
